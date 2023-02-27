@@ -1,0 +1,268 @@
+from math import sqrt
+from restos import liste_restos
+from restos import archives
+
+liste_restos_2018 = archives.get(str(2018))
+liste_restos_2019 = archives.get(str(2019))
+
+def calculerTotal(listeResto,key):
+    total = 0
+    for resto in listeResto:
+        valeur = resto.get(key) # récupérer la valeur associée à la clé.
+        total = total + valeur
+    return total
+
+def calculEcartTypeNote(moyenne,nombreRestaurants,listeRestos):
+    dividende = 0
+    for resto in listeRestos:
+        note = resto.get('note')
+        dividende += pow(abs(note - moyenne),2) 
+    
+    return sqrt((dividende)/(nombreRestaurants))
+
+def RestoAyantNotePlus(anne,listeResto):
+    listNote = []
+    for resto in listeResto:
+        note = resto.get('note')
+        nom = resto.get('nom')
+        if(note >= 4.5):
+            listNote.append(nom)
+    print("- En ", anne,"le nombre de restaurants ayant une note de 4,5 ou plus.",listNote)
+    print("------------------------------------------------------------------------------------------")
+
+def RestoAvis50(listeRestos):
+    for resto in listeRestos:
+        avis = resto.get('votes')
+        nom = resto.get('nom')
+        lat = resto.get('lat')
+        lon = resto.get('lon')
+        if (avis > 50):
+            print('- La moyenne des latitudes de restaurant',nom,"est",lat/len(listeRestos))
+            print('- La moyenne des longtitudes de restaurant',nom,"est",lon/len(listeRestos))
+            print("------------------------------------------------------------------------------------------")
+
+def verifieRestaurantDansRue(listeResto,value):
+    for resto in listeResto:
+        rue = resto.get('rue')
+        nom = resto.get('nom')
+        if (value == rue):
+            print("- Le restaurant",nom,"est dans la",value)
+            break
+    else:
+        print("- Il n'y a aucun restaurant dans la",value)
+
+def minMaxNom(listeRestos,key):
+    listValeur = []
+    for resto in listeRestos:
+        nom = resto.get('nom')
+        valeur = resto.get(key)
+        # if(valeur.isdigit()): # isdigit: check whether the value is number or not
+        listValeur.append((valeur))
+    return min(listValeur), max(listValeur),nom
+
+def NomRestaurantPremierEtDernierPosition(listeRestos,premierPosition,dernierPosition):
+    for resto in listeRestos:
+        nom = resto.get('nom')
+        pos = resto.get('pos')
+        if(pos == premierPosition): # quand on fait la comparaison, il faut faire attention les types: int avec int, non int avec str
+            print("- Le restaurant",nom ,"est classé à la première (",premierPosition,")position.")
+        elif(pos == dernierPosition):
+            print("- Le restaurant",nom ,"est classé à la dernière (",dernierPosition,")position.")
+
+def afficherToutesInfo(listeRestos):
+    for resto in listeRestos:
+        pos = resto.get('pos')
+        nom = resto.get('nom')
+        votes = resto.get('votes')
+        num = resto.get('num')
+        rue = resto.get('rue')
+        lat = resto.get('lat')
+        lon = resto.get('lon')
+        if (nom == "la ducasse"):
+            print("Toutes les informations disponibles sur le restaurant la ducasse sont :\nPosition :",pos,"\nNom :",nom,"\nVotes:",votes,"\nNuméro de la rue :",num,"\nNom de la rue :",rue,"\nLatitudes",lat,"\nLongitudes",lon)
+            print("------------------------------------------------------------------------------------------")
+        elif (num == "14") and (rue == "rue des postes"):
+            print("Toutes les informations disponibles sur le restaurant qui se trouve au 14 rue des poste :\nPosition :",pos,"\nNom :",nom,"\nVotes:",votes,"\nNuméro de la rue :",num,"\nNom de la rue :",rue,"\nLatitudes",lat,"\nLongitudes",lon)
+            print("------------------------------------------------------------------------------------------")
+
+def AfficherNombreRestosDisponible(anneeDebut, anneeFin) : 
+    for annee in range(anneeDebut,anneeFin+1):
+        print("En",annee ,"le nombre de restaurants disponibles est",len(archives.get(str(annee))))
+
+def getNouveauxResto(key,restoAnnee1,restoAnnee2):
+    nouveauxRestos1 = []
+    for resto1 in restoAnnee1:
+        nouveauRestaurant = True
+        values = resto1.get(key)
+        for resto2 in restoAnnee2:
+            if values == resto2[key]:
+                nouveauRestaurant = False
+                break
+        if nouveauRestaurant == 1:
+            nouveauxRestos1.append(resto1)
+    return nouveauxRestos1  
+
+nomNouveauResto = getNouveauxResto('nom',liste_restos_2019,liste_restos_2018)
+
+
+# #Exercice 2
+print("- En 2017, le nombre de restaurants disponibles",len(liste_restos))
+print("- En 2018, le nombre de restaurants disponibles",len(liste_restos_2018))
+print("- En 2019, le nombre de restaurants disponibles",len(liste_restos_2019))
+print("------------------------------------------------------------------------------------------")
+
+# # Exercice 3
+totalVotes_2017 = calculerTotal(liste_restos,'votes')
+totalVotes_2018 = calculerTotal(liste_restos_2018,'votes')
+totalVotes_2019 = calculerTotal(liste_restos_2019,'votes')
+print('- En 2017, le total de votes pour tous les restaurants est',totalVotes_2017)
+print('- En 2018, le votes pour tous les restaurants est',totalVotes_2018)
+print('- En 2019, le votes pour tous les restaurants est',totalVotes_2019)
+print("------------------------------------------------------------------------------------------")
+
+length_Resto2017 = len(liste_restos)
+length_Resto2018 = len(liste_restos_2018)
+length_Resto2019 = len(liste_restos_2019)
+
+moyenVote_2017 = totalVotes_2017/length_Resto2017
+moyenVote_2018 = totalVotes_2018/length_Resto2018
+moyenVote_2019 = totalVotes_2019/length_Resto2019
+
+print('- En 2017, la moyenne de votes pour tous les restaurants est ',"%.2f" % moyenVote_2017)
+print('- En 2018, la moyenne de votes pour tous les restaurants est ',"%.2f" % moyenVote_2018)
+print('- En 2019, la moyenne de votes pour tous les restaurants est ',"%.2f" % moyenVote_2019)
+print("------------------------------------------------------------------------------------------")
+
+# # Exercice 4
+totalNote_2017 = calculerTotal(liste_restos,'note')
+totalNote_2018 = calculerTotal(liste_restos_2018,'note')
+totalNote_2019 = calculerTotal(liste_restos_2019,'note')
+
+moyenNote_2017 = totalNote_2017/length_Resto2017
+moyenNote_2018 = totalNote_2018/length_Resto2018
+moyenNote_2019 = totalNote_2019/length_Resto2019
+
+# Moyenne
+print('- En 2017, la moyenne de note pour tous les restaurants est ',("%.2f" % moyenNote_2017))
+print('- En 2018, la moyenne de note pour tous les restaurants est ',("%.2f" % moyenNote_2018))
+print('- En 2019, la moyenne de note pour tous les restaurants est ',("%.2f" % moyenNote_2019))
+print("------------------------------------------------------------------------------------------")
+
+#Ecart-type
+print('- En 2017, l\'ecart-type de notes pour tous les restaurants est ',("%.2f" %  calculEcartTypeNote(moyenNote_2017,length_Resto2017,liste_restos)))
+print('- En 2018, l\'ecart-type de notes pour tous les restaurants est ',("%.2f" %  calculEcartTypeNote(moyenNote_2018,length_Resto2017,liste_restos_2018)))
+print('- En 2019, l\'ecart-type de notes pour tous les restaurants est ',("%.2f" %  calculEcartTypeNote(moyenNote_2019,length_Resto2017,liste_restos_2019)))
+print("------------------------------------------------------------------------------------------")
+
+# # Exercice 5
+RestoAyantNotePlus(2017,liste_restos)
+print("------------------------------------------------------------------------------------------")
+RestoAyantNotePlus(2018,liste_restos_2018)
+print("------------------------------------------------------------------------------------------")
+RestoAyantNotePlus(2019,liste_restos_2019)
+
+# # Exercice 6
+totallatitudes_2017 = calculerTotal(liste_restos,'lat')
+totallatitudes_2018 = calculerTotal(liste_restos_2018,'lat')
+totallatitudes_2019 = calculerTotal(liste_restos_2019,'lat')
+
+moyenlatitudes_2017 = totallatitudes_2017/length_Resto2017
+moyenlatitudes_2018 = totallatitudes_2018/length_Resto2018
+moyenlatitudes_2019 = totallatitudes_2019/length_Resto2019
+
+# Moyenne
+print('- En 2017, la moyenne de latitudes pour tous les restaurants est ',(moyenlatitudes_2017))
+print('- En 2018, la moyenne de latitudes pour tous les restaurants est ',(moyenlatitudes_2018))
+print('- En 2019, la moyenne de latitudes pour tous les restaurants est ',(moyenlatitudes_2019))
+print("------------------------------------------------------------------------------------------")
+
+totalLongitudes_2017 = calculerTotal(liste_restos,'lon')
+totalLongitudes_2018 = calculerTotal(liste_restos_2018,'lon')
+totalLongitudes_2019 = calculerTotal(liste_restos_2019,'lon')
+
+moyenLongitudes_2017 = totalLongitudes_2017/length_Resto2017
+moyenLongitudes_2018 = totalLongitudes_2018/length_Resto2018
+moyenLongitudes_2019 = totalLongitudes_2019/length_Resto2019
+
+# Moyenne
+print('- En 2017, la moyenne de longitudes pour tous les restaurants est ',(moyenLongitudes_2017))
+print('- En 2018, la moyenne de longitudes pour tous les restaurants est ',(moyenLongitudes_2018))
+print('- En 2019, la moyenne de longitudes pour tous les restaurants est ',(moyenLongitudes_2019))
+print("------------------------------------------------------------------------------------------")
+
+# Moyen 
+RestoAvis50(liste_restos)
+RestoAvis50(liste_restos_2018)
+RestoAvis50(liste_restos_2019)
+# # exercice 7
+verifieRestaurantDansRue(liste_restos,"rue alphonse mercier")
+verifieRestaurantDansRue(liste_restos,"rue du port")
+print("------------------------------------------------------------------------------------------")
+verifieRestaurantDansRue(liste_restos_2018,"rue alphonse mercier")
+verifieRestaurantDansRue(liste_restos_2018,"rue du port")
+print("------------------------------------------------------------------------------------------")
+verifieRestaurantDansRue(liste_restos_2019,"rue alphonse mercier")
+verifieRestaurantDansRue(liste_restos_2019,"rue du port")
+print("------------------------------------------------------------------------------------------")
+#exercice 8
+
+premierPosition_2017, dernierPosition_2017,nom = minMaxNom(liste_restos,'pos')
+NomRestaurantPremierEtDernierPosition(liste_restos,premierPosition_2017,dernierPosition_2017)
+print("------------------------------------------------------------------------------------------")
+
+premierPosition_2018, dernierPosition_2018,nom = minMaxNom(liste_restos_2018,'pos')
+NomRestaurantPremierEtDernierPosition(liste_restos_2018,premierPosition_2018,dernierPosition_2018)
+print("------------------------------------------------------------------------------------------")
+
+premierPosition_2019, dernierPosition_2019,nom = minMaxNom(liste_restos_2019,'pos')
+NomRestaurantPremierEtDernierPosition(liste_restos_2019,premierPosition_2019,dernierPosition_2019)
+print("------------------------------------------------------------------------------------------")
+
+# #exercice 9
+print("- En 2017: ")
+afficherToutesInfo(liste_restos)
+print("- En 2018: ")
+afficherToutesInfo(liste_restos_2018)
+print("- En 2019: ")
+afficherToutesInfo(liste_restos_2019)
+# #exercice 10
+print("La liste des restaurants se trouvant rue du molinel :")
+print("- En 2017")
+verifieRestaurantDansRue(liste_restos,"rue du molinel")
+print("- En 2018")
+verifieRestaurantDansRue(liste_restos_2018,"rue du molinel")
+print("- En 2019")
+verifieRestaurantDansRue(liste_restos_2019,"rue du molinel")
+print("------------------------------------------------------------------------------------------")
+# #exercice 11
+minAvis_2017, maxAvis_2017, nom =  minMaxNom(liste_restos,'votes')
+print("- En 2017, le restaurant ayant reçu le plus d'avis est :",nom,"avec le nombre d'avis",maxAvis_2017)
+minAvis_2018, maxAvis_2018, nom =  minMaxNom(liste_restos_2018,'votes')
+print("- En 2018, le restaurant ayant reçu le plus d'avis est :",nom,"avec le nombre d'avis",maxAvis_2018)
+minAvis_2019, maxAvis_2019, nom =  minMaxNom(liste_restos_2019,'votes')
+print("- En 2019, le restaurant ayant reçu le plus d'avis est :",nom,"avec le nombre d'avis",maxAvis_2019)
+print("------------------------------------------------------------------------------------------")
+##exercice 13
+# restoCommun = []
+# restoNouveau = []
+# count = 0
+# for resto in liste_restos_2019:
+#     nom_2019 = resto.get('nom')
+#     for resto in liste_restos_2018:
+#         nom_2018 = resto.get('nom')
+#         # if nom_2018 == nom_2019:
+#         #     restoCommun.append(nom_2018)
+#         if nom_2019 != nom_2018:
+#             # restoNouveau.append(nom_2019)
+#             count += 1
+#             break
+# print(count)
+# print("RT commun",len(restoCommun),'\n',restoCommun)
+# print("RT nouveau",restoNouveau)
+# print(liste_restos_2019[0])
+#exercice 13
+#Quels sont les restaurants qui sont apparus lors de la dernière année
+# print(nomNouveauxRestos)
+# print(nomNouveauResto)
+# for restoNouveau in nomNouveauResto: 
+#     print(restoNouveau.get('nom'))
